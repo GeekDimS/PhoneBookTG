@@ -9,6 +9,7 @@ import data_former
 import logger
 
 # pip install python-telegram-bot - загрузить библиотеку
+# Удалить!!! Строка только для проверки работы Гит
 
 path_file_token = 'C:/token.txt'    # Запишите токен своего Телеграм бота в текстовый файл по такому пути!!!
 with open(path_file_token, 'r') as data:
