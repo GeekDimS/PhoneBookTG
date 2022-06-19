@@ -11,7 +11,7 @@ import logger
 # pip install python-telegram-bot - загрузить библиотеку
 # Удалить!!! Строка только для проверки работы Гит
 
-path_file_token = 'C:/token.txt'    # Запишите токен своего Телеграм бота в текстовый файл по такому пути!!!
+path_file_token = 'token.txt'    # Запишите токен своего Телеграм бота в текстовый файл по такому пути!!!
 with open(path_file_token, 'r') as data:
     for line in data:
         str_token = line
@@ -33,13 +33,21 @@ EXPORT_WINDOW_HEADER = "Экспорт базы"
 def start(update, context):
     arg = context.args
     if not arg:
-        context.bot.send_message(update.effective_chat.id, "Привет")
+        context.bot.send_message(update.effective_chat.id, "Привет, я телефонный справочник\nВот список моих возможностей:")
+        context.bot.send_message(update.effective_chat.id, "/allphones -- показать списое всех абонентов\n"
+                                                            "/addphone -- добавить абонента\n"
+                                                            "/deletephone -- удалить абонента\n"
+                                                            "/findphone -- найти абонента\n"
+                                                            "/exporttojson -- экспортировать базу данных в json формат\n"
+                                                            "/exporttohtml -- экспортировать базу данных в html формат\n"
+                                                            "/importfromjson -- импортировать базу данных из json формата\n"
+                                                            "/importfromhtml -- импортировать базу данных из html формата\n")
     else:
         context.bot.send_message(update.effective_chat.id, f"{' '.join(arg)}")
 
 
 def info(update, context):
-    context.bot.send_message(update.effective_chat.id, "Меня создала компания GB!")
+    context.bot.send_message(update.effective_chat.id, "Меня создала компанда из курса 'Разработчик!'")
 
 
 def message(update, context):
@@ -53,6 +61,32 @@ def message(update, context):
 def unknown(update, context):
     context.bot.send_message(update.effective_chat.id, 'Ты несешь какую-то дичь...')
 
+
+def export_to_json(update, context):
+    file_worker.export_from_csv_to_json_file()
+    export_to_json_message = "Произведён экспорт базы из формата csv в формат json"
+    logger.add_in_log(f'{EXPORT_WINDOW_HEADER}  {export_to_json_message}')
+    context.bot.send_message(update.effective_chat.id, EXPORT_WINDOW_HEADER + "... " + export_to_json_message)
+
+
+def export_to_html(update, context):
+    file_worker.export_from_csv_to_html_file()
+    export_to_html_message = "Произведён экспорт базы из формата csv в формат html"
+    logger.add_in_log(f'{EXPORT_WINDOW_HEADER}  {export_to_html_message}')
+    context.bot.send_message(update.effective_chat.id, EXPORT_WINDOW_HEADER + "... " + export_to_html_message)
+
+def import_from_json(update, context):
+    file_worker.import_from_json_to_csv_file()
+    import_from_json_to_csv_message = "Произведён импорт базы из формата json в формат csv"
+    logger.add_in_log(f'{IMPORT_WINDOW_HEADER}  {import_from_json_to_csv_message}')
+    context.bot.send_message(update.effective_chat.id, IMPORT_WINDOW_HEADER + "... " + import_from_json_to_csv_message)
+
+
+def import_from_html(update, context):
+    file_worker.import_from_html_to_csv_file()
+    import_from_html_to_csv_message = "Произведён импорт базы из формата html в формат csv"
+    logger.add_in_log(f'{IMPORT_WINDOW_HEADER}  {import_from_html_to_csv_message}')
+    context.bot.send_message(update.effective_chat.id, IMPORT_WINDOW_HEADER + "... " + import_from_html_to_csv_message)
 
 
 def show_all_data(update, context):
@@ -80,7 +114,7 @@ def add_phone(update, context):
         lastname_string, name_string, phone_string = data_checker.data_correction(lastname, name, phone)
         file_worker.add_to_csv_file([[ lastname_string, name_string, phone_string]])
         add_window_message += lastname_string + " " + name_string + " " + phone_string   
-        context.bot.send_message(update.effective_chat.id, ADD_WINDOW_HEADER +' '+ add_window_message)
+        context.bot.send_message(update.effective_chat.id, ADD_WINDOW_HEADER +'... '+ add_window_message)
         logger.add_in_log(f'{ADD_WINDOW_HEADER} {add_window_message}')    
 
 
@@ -92,10 +126,19 @@ unknown_handler = MessageHandler(Filters.command, unknown) #/game
 
 all_view_handler = CommandHandler('allphones', show_all_data)
 addphone_handler = CommandHandler('addphone', add_phone)
+export_to_json_handler = CommandHandler('exporttojson', export_to_json)
+export_to_html_handler = CommandHandler('exporttohtml', export_to_html)
+import_from_json_handler = CommandHandler('importfromjson', import_from_json)
+import_from_html_handler  = CommandHandler('importfromhtml', import_from_html)
 
 
 dispatcher.add_handler(addphone_handler)
 dispatcher.add_handler(all_view_handler)
+dispatcher.add_handler(export_to_json_handler)
+dispatcher.add_handler(export_to_html_handler)
+dispatcher.add_handler(import_from_json_handler)
+dispatcher.add_handler(import_from_html_handler)
+
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(info_handler)
 dispatcher.add_handler(unknown_handler)
