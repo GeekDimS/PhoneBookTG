@@ -9,7 +9,6 @@ import data_former
 import logger
 
 # pip install python-telegram-bot - загрузить библиотеку
-# Удалить!!! Строка только для проверки работы Гит
 
 path_file_token = 'C:/token.txt'    # Запишите токен своего Телеграм бота в текстовый файл по такому пути!!!
 with open(path_file_token, 'r') as data:
@@ -19,6 +18,8 @@ with open(path_file_token, 'r') as data:
 bot = Bot(token=str_token)
 updater = Updater(token=str_token, use_context=True)
 dispatcher = updater.dispatcher
+
+
 
 
 ADD_WINDOW_HEADER = "Добавление в базу"
@@ -71,6 +72,8 @@ def add_phone(update, context):
     add_window_empty_message = "Добавить данные не получится. Не все поля заполнены."
     add_window_message = "Запись успешно добавлена\n"
 
+    
+
     arg = context.args
     name, lastname, phone = arg
     if not data_checker.check_data_empty_at_least_one(name, lastname, phone):
@@ -82,7 +85,6 @@ def add_phone(update, context):
         add_window_message += lastname_string + " " + name_string + " " + phone_string   
         context.bot.send_message(update.effective_chat.id, ADD_WINDOW_HEADER +' '+ add_window_message)
         logger.add_in_log(f'{ADD_WINDOW_HEADER} {add_window_message}')    
-
 
 
 start_handler = CommandHandler('start', start)
@@ -100,7 +102,6 @@ dispatcher.add_handler(start_handler)
 dispatcher.add_handler(info_handler)
 dispatcher.add_handler(unknown_handler)
 dispatcher.add_handler(message_handler)
-
 
 print("server_started")
 
