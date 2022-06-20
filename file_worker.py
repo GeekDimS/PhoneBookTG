@@ -57,7 +57,7 @@ def export_from_csv_to_json_file(file_name_from = file_name_csv, file_name_to = 
     '''
     data = read_from_csv_file(file_name_from)
     with open(file_name_to, 'w', encoding = 'UTF-8') as file_json:
-        json.dump(data, file_json)
+        json.dump(data, file_json, indent=4)
 
 
 def read_from_json_file(file_name = file_name_json):
