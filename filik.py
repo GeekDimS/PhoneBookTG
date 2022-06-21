@@ -21,6 +21,15 @@ dispatcher = updater.dispatcher
 
 NAME, LASTNAME, PHONE = range(3) #константы этапов разговоров
 
+ALL_FUNCTIONS = "/allphones -- показать списое всех абонентов\n" \
+                "/addphone -- добавить абонента\n" \
+                "/deletephone -- удалить абонента\n" \
+                "/findphone -- найти абонента\n" \
+                "/exporttojson -- экспортировать базу данных в json формат\n" \
+                "/exporttohtml -- экспортировать базу данных в html формат\n" \
+                "/importfromjson -- импортировать базу данных из json формата\n" \
+                "/importfromhtml -- импортировать базу данных из html формата\n"
+
 
 
 ADD_WINDOW_HEADER = "Добавление в базу"
@@ -39,14 +48,7 @@ def start(update, context):
     arg = context.args
     if not arg:
         context.bot.send_message(update.effective_chat.id, "Привет, я телефонный справочник\nВот список моих возможностей:")
-        context.bot.send_message(update.effective_chat.id, "/allphones -- показать списое всех абонентов\n"
-                                                            "/addphone -- добавить абонента\n"
-                                                            "/deletephone -- удалить абонента\n"
-                                                            "/findphone -- найти абонента\n"
-                                                            "/exporttojson -- экспортировать базу данных в json формат\n"
-                                                            "/exporttohtml -- экспортировать базу данных в html формат\n"
-                                                            "/importfromjson -- импортировать базу данных из json формата\n"
-                                                            "/importfromhtml -- импортировать базу данных из html формата\n")
+        context.bot.send_message(update.effective_chat.id, ALL_FUNCTIONS)
     else:
         context.bot.send_message(update.effective_chat.id, f"{' '.join(arg)}")
 
@@ -58,13 +60,15 @@ def info(update, context):
 def message(update, context):
     text = update.message.text
     if text.lower() == 'привет':
-        context.bot.send_message(update.effective_chat.id, 'И тебе привет..')
+        context.bot.send_message(update.effective_chat.id, "Привет, я телефонный справочник\nВот список моих возможностей:")
     else:
-        context.bot.send_message(update.effective_chat.id, 'я тебя не понимаю')
+        context.bot.send_message(update.effective_chat.id, 'Я тебя не понимаю, но могу подскзать, чем могу быть полезен:')
+    context.bot.send_message(update.effective_chat.id, ALL_FUNCTIONS)
 
 
 def unknown(update, context):
-    context.bot.send_message(update.effective_chat.id, 'Ты несешь какую-то дичь...')
+    context.bot.send_message(update.effective_chat.id, 'Такая команда мне не знакома. Вот все, что я умею:')
+    context.bot.send_message(update.effective_chat.id, ALL_FUNCTIONS)
 
 
 def export_to_json(update, context):
@@ -193,7 +197,7 @@ def input_data_find(update, context):
     context.bot.send_message(update.effective_chat.id, 'Введите имя для поиска или отправьте /skip для пропуска')
     return NAME
 
-def input_name(update, context):
+def input_name(update, _):
     global name
     name = update.message.text
     # print(name)
@@ -272,8 +276,6 @@ conv_handler_find = ConversationHandler(
 
 start_handler = CommandHandler('start', start)
 info_handler = CommandHandler('info', info)
-# message_handler = MessageHandler(Filters.text, message)
-# unknown_handler = MessageHandler(Filters.command, unknown) #/game
 
 all_view_handler = CommandHandler('allphones', show_all_data)
 addphone_handler = CommandHandler('addphone', add_phone)
@@ -281,10 +283,8 @@ export_to_json_handler = CommandHandler('exporttojson', export_to_json)
 export_to_html_handler = CommandHandler('exporttohtml', export_to_html)
 import_from_json_handler = CommandHandler('importfromjson', import_from_json)
 import_from_html_handler  = CommandHandler('importfromhtml', import_from_html)
-
-#input_data_find_handler = CommandHandler('findphone', input_data_find)
-#input_data_delete_handler = CommandHandler('deletephone', input_data_delete)
-
+unknown_handler = MessageHandler(Filters.command, unknown) #/game
+message_handler = MessageHandler(Filters.text, message)
 
 dispatcher.add_handler(addphone_handler)
 dispatcher.add_handler(all_view_handler)
@@ -292,14 +292,12 @@ dispatcher.add_handler(export_to_json_handler)
 dispatcher.add_handler(export_to_html_handler)
 dispatcher.add_handler(import_from_json_handler)
 dispatcher.add_handler(import_from_html_handler)
-# dispatcher.add_handler(input_data_find_handler)
-# dispatcher.add_handler(input_data_delete_handler)
 dispatcher.add_handler(conv_handler_find)
 
 dispatcher.add_handler(start_handler)
 dispatcher.add_handler(info_handler)
-# dispatcher.add_handler(unknown_handler)
-# dispatcher.add_handler(message_handler)
+dispatcher.add_handler(unknown_handler)
+dispatcher.add_handler(message_handler)
 
 print("server_started")
 
